@@ -5,11 +5,11 @@ from .models import AccessToken, AuthorizationCode, AuthorizationToken, Client, 
 class AccessTokenAdmin(admin.ModelAdmin):
     list_display = ("client", "user", "truncated_refresh_token", "truncated_token", )
     list_filter = ("created_at", "expires_at", "is_active", )
-    
+
     def truncated_refresh_token(self, obj):
         return obj.refresh_token.token[0:40] + "..."
     truncated_refresh_token.short_description = "refresh token"
-        
+
     def truncated_token(self, obj):
         return obj.token[0:40] + "..."
     truncated_token.short_description = "token"
@@ -18,7 +18,7 @@ class AccessTokenAdmin(admin.ModelAdmin):
 class AuthorizationCodeAdmin(admin.ModelAdmin):
     list_display = ("client", "redirect_uri", "truncated_token", )
     list_filter = ("created_at", "expires_at", "is_active", )
-        
+
     def truncated_token(self, obj):
         return obj.token[0:50] + "..."
     truncated_token.short_description = "token"
@@ -27,7 +27,7 @@ class AuthorizationCodeAdmin(admin.ModelAdmin):
 class AuthorizationTokenAdmin(admin.ModelAdmin):
     list_display = ("client", "user", "truncated_token")
     list_filter = ("created_at", "expires_at", "is_active", )
-        
+
     def truncated_token(self, obj):
         return obj.token[0:75] + "..."
     truncated_token.short_description = "token"
@@ -44,12 +44,12 @@ class RedirectUriAdmin(admin.ModelAdmin):
 
 class RefreshTokenAdmin(admin.ModelAdmin):
     list_display = ("client", "user", "truncated_authorization_token", "truncated_token", )
-    list_filter = ("created_at", "expires_at", "is_active", )
-        
+    list_filter = ("created_at", "is_active", )
+
     def truncated_authorization_token(self, obj):
         return obj.authorization_token.token[0:40] + "..."
     truncated_authorization_token.short_description = "token"
-        
+
     def truncated_token(self, obj):
         return obj.token[0:40] + "..."
     truncated_token.short_description = "token"

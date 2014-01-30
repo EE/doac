@@ -332,7 +332,7 @@ class TokenView(OAuthView):
         from .compat import now
         from .http import JsonResponse
 
-        remaining = self.refresh_token.expires_at - now()
+        remaining = self.access_token.expires_at - now()
 
         response = {}
         response["refresh_token"] = self.refresh_token.token
@@ -373,9 +373,11 @@ class TokenView(OAuthView):
             try:
                 self.authorization_token = AuthorizationToken.objects.with_client(self.client).for_token(self.code)
 
+                if self.authorization_token.is_expired:
+                    raise AuthorizationCodeNotValid()
+
                 if not self.authorization_token.is_active:
                     self.authorization_token.revoke_tokens()
-
                     raise AuthorizationCodeAlreadyUsed()
             except AuthorizationToken.DoesNotExist:
                 raise AuthorizationCodeNotValid()

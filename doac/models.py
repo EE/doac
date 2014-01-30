@@ -1,3 +1,5 @@
+import datetime
+
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -55,6 +57,10 @@ class AccessToken(models.Model):
             self.expires_at = now() + options.access_token["expires"]
 
         super(AccessToken, self).save(*args, **kwargs)
+
+    @property
+    def is_expired(self):
+        return self.expires_at <= datetime.datetime.now()
 
 
 class AuthorizationCode(models.Model):
@@ -163,6 +169,10 @@ class AuthorizationToken(models.Model):
 
         super(AuthorizationToken, self).save(*args, **kwargs)
 
+    @property
+    def is_expired(self):
+        return self.expires_at <= datetime.datetime.now()
+
 
 class Client(models.Model):
     name = models.CharField(max_length=255)
@@ -217,7 +227,6 @@ class RefreshToken(models.Model):
     scope = models.ManyToManyField("Scope", related_name="refresh_tokens")
 
     created_at = models.DateTimeField(auto_now_add=True)
-    expires_at = models.DateTimeField(blank=True, help_text=AUTO_GENERATION_HELP_TEXT)
     is_active = models.BooleanField(default=True)
 
     objects = managers.RefreshTokenManager()
@@ -255,9 +264,6 @@ class RefreshToken(models.Model):
 
         if not self.token:
             self.token = self.generate_token()
-
-        if not self.expires_at:
-            self.expires_at = now() + options.refresh_token["expires"]
 
         super(RefreshToken, self).save(*args, **kwargs)
 
